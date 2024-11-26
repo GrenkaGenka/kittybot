@@ -1,15 +1,16 @@
-# kittybot/send_random_image.py
-import requests  # Импортируем библиотеку для работы с запросами.
-from telebot import TeleBot
+import requests
+from telebot import TeleBot, types
+from dotenv import load_dotenv
+import os
 
 
-bot = TeleBot(token='5665092908:AAEFjVm-VAACr3MTE38ICrDUBXgY2QQXbX4')
+load_dotenv()
 
-
-chat_id = 920782568
+bot = TeleBot(token=os.getenv('TOKEN'))
 
 
 URL = 'https://api.thecatapi.com/v1/images/search'
+
 
 # Код запроса к thecatapi.com и обработку ответа обернём в функцию:
 def get_new_image():
@@ -18,7 +19,6 @@ def get_new_image():
     return random_cat
 
 
-# Добавляем хендлер для команды /newcat:
 @bot.message_handler(commands=['newcat'])
 def new_cat(message):
     chat = message.chat
@@ -28,11 +28,20 @@ def new_cat(message):
 @bot.message_handler(commands=['start'])
 def wake_up(message):
     chat = message.chat
-    name = message.chat.first_name
-
+    name = chat.first_name
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.row(  # Первая строка кнопок.
+        types.KeyboardButton('Который час?'),  # Создаём первую кнопку в строке.
+        types.KeyboardButton('Определи мой ip'),  # Создаём вторую кнопку в строке.
+    )
+    keyboard.row(  # Вторая строка кнопок.
+        types.KeyboardButton('/random_digit'),  # Создаём кнопку в строке.
+    )
+    
     bot.send_message(
         chat_id=chat.id,
-        text=f'Привет, {name}. Посмотри, какого котика я тебе нашёл',
+        text=f'Спасибо, что вы включили меня, {name}!',
+        reply_markup=keyboard,  # Отправляем пользователю текстовый ответ и клавиатуру.
     )
 
     bot.send_photo(chat.id, get_new_image())
