@@ -19,7 +19,7 @@ def get_new_image():
     return random_cat
 
 
-@bot.message_handler(commands=['newcat'])
+@bot.message_handler(commands=['random_digit'])
 def new_cat(message):
     chat = message.chat
     bot.send_photo(chat.id, get_new_image())
